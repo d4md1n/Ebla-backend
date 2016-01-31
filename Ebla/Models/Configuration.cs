@@ -7,6 +7,6 @@ namespace Ebla.Models
 {
     public class Configuration
     {
-        public static string CONNECTION_STRING = "Data Source=DAMDIN-PC\\MSSQLSERVER2;Initial Catalog=Ebla;Integrated Security=True";
+        public static string CONNECTION_STRING = "Server=tcp:ebla.database.windows.net,1433;Database=Ebla;User ID=MasterOfPuppets@ebla;Password=Unforg1ven;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
     }
 }
