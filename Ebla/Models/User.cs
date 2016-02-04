@@ -32,8 +32,33 @@ namespace Ebla.Models
 
                 }
             }
+        }
+        public static Boolean userExists(User u)
+        {
+            string connStr = Configuration.CONNECTION_STRING;
+
             
-            
+
+            using (SqlConnection db = new SqlConnection(connStr))
+            {
+                using (SqlCommand cmd = new SqlCommand("CheckUser", db))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@user_name", SqlDbType.VarChar).Value = u.user_name;
+                    cmd.Parameters.Add("@user_password", SqlDbType.VarChar).Value = u.user_password;
+
+                    db.Open();
+                    SqlDataReader dataReader= cmd.ExecuteReader();
+                    dataReader.Read();
+
+                    if ((int)dataReader.GetInt32(0) == 1)
+                    {
+                        return true;
+                    }
+
+                }
+            }
+            return false;
         }
     }
 }
