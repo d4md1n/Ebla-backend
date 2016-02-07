@@ -1,11 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Ebla.Models
 {
@@ -33,7 +28,7 @@ namespace Ebla.Models
                 }
             }
         }
-        public static Boolean userExists(User u)
+        public static Boolean LoginUser(User u)
         {
             string connStr = Configuration.CONNECTION_STRING;
 
@@ -41,7 +36,7 @@ namespace Ebla.Models
 
             using (SqlConnection db = new SqlConnection(connStr))
             {
-                using (SqlCommand cmd = new SqlCommand("CheckUser", db))
+                using (SqlCommand cmd = new SqlCommand("LoginUser", db))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@user_name", SqlDbType.VarChar).Value = u.user_name;
@@ -60,5 +55,33 @@ namespace Ebla.Models
             }
             return false;
         }
+
+        public static Boolean userExists(User u)
+        {
+            string connStr = Configuration.CONNECTION_STRING;
+
+
+
+            using (SqlConnection db = new SqlConnection(connStr))
+            {
+                using (SqlCommand cmd = new SqlCommand("CheckUserExistence", db))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@user_name", SqlDbType.VarChar).Value = u.user_name;
+                    db.Open();
+                    SqlDataReader dataReader = cmd.ExecuteReader();
+                    dataReader.Read();
+
+                    if (dataReader.GetInt32(0) > 0)
+                    {
+                        return true;
+                    }
+
+                }
+            }
+            return false;
+        }
+
+
     }
 }

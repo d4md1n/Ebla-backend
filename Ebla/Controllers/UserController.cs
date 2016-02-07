@@ -1,6 +1,7 @@
 ﻿using Ebla.Models;
 using System.Web.Http.Results;
 using System.Web.Http;
+using System;
 
 namespace Ebla.Controllers
 {
@@ -13,18 +14,24 @@ namespace Ebla.Controllers
             return "value"+id;
         }
 
-        // POST: api/User
         [HttpPost]
-        public JsonResult<User> CreateUser(Ebla.Models.User u)
+        public string CreateUser(Ebla.Models.User u)
         {
-            Ebla.Models.User.createUser(u);
-            return Json(u);
+            if (Ebla.Models.User.userExists(u))
+            {
+                return "User exists already!";
+            }
+            else
+            {
+                Ebla.Models.User.createUser(u);
+                return "User created successfully!";
+            }
         }
 
         [HttpPost]
         public JsonResult<bool> Login(Ebla.Models.User u)
         {
-            bool temp = Ebla.Models.User.userExists(u);
+            bool temp = Ebla.Models.User.LoginUser(u);
             return Json(temp);
         }
     }
