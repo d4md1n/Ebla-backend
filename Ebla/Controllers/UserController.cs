@@ -29,10 +29,16 @@ namespace Ebla.Controllers
         }
 
         [HttpPost]
-        public JsonResult<bool> Login(Ebla.Models.User u)
+        public string Login(Ebla.Models.User u)
         {
-            bool temp = Ebla.Models.User.LoginUser(u);
-            return Json(temp);
+            if (Ebla.Models.User.LoginUser(u))
+            {
+                return "You have been successfully logged in!";
+            }
+            else
+            {
+                return "Your username or password are not valid!";
+            }
         }
     }
 }

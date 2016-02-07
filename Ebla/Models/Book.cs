@@ -33,5 +33,28 @@ namespace Ebla.Models
             }
         }
 
+        public static Boolean bookExists(Book b)
+        {
+            string connStr = Configuration.CONNECTION_STRING;
+
+            using (SqlConnection db = new SqlConnection(connStr))
+            {
+                using (SqlCommand cmd = new SqlCommand("CheckBookExistence", db))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@isbn", SqlDbType.VarChar).Value = b.isbn;
+                    db.Open();
+                    SqlDataReader dataReader = cmd.ExecuteReader();
+                    dataReader.Read();
+
+                    if (dataReader.GetInt32(0) > 0)
+                    {
+                        return true;
+                    }
+
+                }
+            }
+            return false;
+        }
     }
 }
