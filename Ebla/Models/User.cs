@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -82,6 +83,55 @@ namespace Ebla.Models
             return false;
         }
 
+
+        public static List<User> getUsers(User user)
+        {
+            string connStr = Ebla.Models.Configuration.CONNECTION_STRING;
+            List<User> users = new List<User>();
+
+
+            using (SqlConnection db = new SqlConnection(connStr))
+            {
+                using (SqlCommand cmd = new SqlCommand("GetUsers", db))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@user_name", SqlDbType.VarChar).Value = user.user_name;
+                    db.Open();
+                    SqlDataReader dataReader = cmd.ExecuteReader();
+                    while (dataReader.Read())
+                    {
+                        User tmp = new User();
+                        tmp.user_name = dataReader.GetString(0);
+                        
+                        users.Add(tmp);
+                    }
+                }
+            }
+
+            return users;
+        }
+
+        public static void LendBook(User owner, User borrower, Book book,String lendDate,String returnDate)
+        {
+            string connStr = Configuration.CONNECTION_STRING;
+
+            using (SqlConnection db = new SqlConnection(connStr))
+            {
+                using (SqlCommand cmd = new SqlCommand("LendBook", db))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@owner_name", SqlDbType.VarChar).Value = owner.user_name;
+                    cmd.Parameters.Add("@borrower_name", SqlDbType.VarChar).Value = borrower.user_name;
+                    cmd.Parameters.Add("@lend_date", SqlDbType.VarChar).Value = lendDate;
+                    cmd.Parameters.Add("@return_date", SqlDbType.VarChar).Value = returnDate;
+                    cmd.Parameters.Add("@book_isbn", SqlDbType.VarChar).Value = book.isbn;
+
+                    db.Open();
+                    cmd.ExecuteNonQuery();
+
+                }
+            }
+        }
 
     }
 }

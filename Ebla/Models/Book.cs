@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -33,7 +34,7 @@ namespace Ebla.Models
             }
         }
 
-        public static Boolean bookExists(Book b)
+       public static Boolean bookExists(Book b)
         {
             string connStr = Configuration.CONNECTION_STRING;
 
@@ -55,6 +56,35 @@ namespace Ebla.Models
                 }
             }
             return false;
+        }
+
+       public static List<Book> getUserBooks(User user)
+       {
+            string connStr = Ebla.Models.Configuration.CONNECTION_STRING;
+            List<Book> books = new List<Book>();
+
+
+            using (SqlConnection db = new SqlConnection(connStr))
+            {
+                using (SqlCommand cmd = new SqlCommand("GetUserBooks", db))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@user_name", SqlDbType.VarChar).Value = user.user_name;
+                    db.Open();
+                    SqlDataReader dataReader = cmd.ExecuteReader();
+                    while (dataReader.Read())
+                    {
+                        Book book = new Book();
+                        book.isbn = dataReader.GetString(0);
+                        book.title = dataReader.GetString(1);
+                        book.author = dataReader.GetString(2);
+                        book.genre = dataReader.GetString(3);
+                        books.Add(book);
+                    }
+                }
+            }
+
+            return books;
         }
     }
 }
