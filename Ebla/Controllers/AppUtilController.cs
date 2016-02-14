@@ -1,17 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Ebla.Models;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
+using System.Web.Http;
 
-namespace Ebla.Models
+namespace Ebla.Controllers
 {
-    public class AppModel
+    public class AppUtilController : ApiController
     {
-        public static void addBookToUser(User user, Book book)
+        BookDomainController bookDomain;
+
+        protected void init()
         {
-            string connStr = Configuration.CONNECTION_STRING;
+            bookDomain = new BookDomainController();
+        }
+
+        [HttpPost]
+        public void AddBookToUser(User user, Book book)
+        {
+            init();
+            string connStr = Ebla.Models.Configuration.CONNECTION_STRING;
+
+            
+            if (!bookDomain.BookExists(book))
+            {
+                bookDomain.CreateBook(user, book);
+            }
 
             using (SqlConnection db = new SqlConnection(connStr))
             {
@@ -27,9 +40,11 @@ namespace Ebla.Models
             }
         }
 
-        public static void removeBookFromUser(User user, Book book)
+        [HttpPost]
+        public void RemoveBookFromUser(User user, Book book)
         {
-            string connStr = Configuration.CONNECTION_STRING;
+            init();
+            string connStr = Ebla.Models.Configuration.CONNECTION_STRING;
 
             using (SqlConnection db = new SqlConnection(connStr))
             {
@@ -45,9 +60,10 @@ namespace Ebla.Models
             }
         }
 
-        public static Boolean userHasBook(User user, Book book)
+        public bool UserHasBook(User user, Book book)
         {
-            string connStr = Configuration.CONNECTION_STRING;
+            init();
+            string connStr = Ebla.Models.Configuration.CONNECTION_STRING;
 
             using (SqlConnection db = new SqlConnection(connStr))
             {
